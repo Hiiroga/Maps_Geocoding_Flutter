@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 void main() async {
-  // Wajib dipanggil sebelum menggunakan plugin yang butuh native binding
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
@@ -36,36 +35,28 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Jalankan semua fungsi utama saat aplikasi pertama kali dimuat
     _runAllLocationTasks();
   }
 
-  /// Menjalankan ketiga fungsi utama secara berurutan
   Future<void> _runAllLocationTasks() async {
     await _getCurrentLocation();
     await _geocodeAddress();
     await _reverseGeocode();
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // FUNGSI 1: Ambil lokasi perangkat saat ini menggunakan Geolocator
-  // ─────────────────────────────────────────────────────────────────────────
   Future<void> _getCurrentLocation() async {
     print('─────────────────────────────────────');
     print('[1] GET CURRENT LOCATION');
     print('─────────────────────────────────────');
 
-    // Cek apakah location service aktif
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       print('[ERROR] Location service tidak aktif. Aktifkan GPS terlebih dahulu.');
       return;
     }
 
-    // Cek status permission
     LocationPermission permission = await Geolocator.checkPermission();
 
-    // Jika permission belum diberikan, minta permission
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
@@ -74,13 +65,11 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    // Jika permission ditolak permanen
     if (permission == LocationPermission.deniedForever) {
       print('[ERROR] Permission lokasi ditolak secara permanen. Buka Settings untuk mengaktifkannya.');
       return;
     }
 
-    // Ambil posisi saat ini
     try {
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -94,15 +83,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // FUNGSI 2: Geocoding – Ubah alamat kampus menjadi koordinat
-  // ─────────────────────────────────────────────────────────────────────────
   Future<void> _geocodeAddress() async {
     print('─────────────────────────────────────');
     print('[2] GEOCODING - ALAMAT KE KOORDINAT');
     print('─────────────────────────────────────');
 
-    // Package geocoding tidak support platform Web
     if (kIsWeb) {
       print('[SKIP] Geocoding tidak didukung di platform Web. Jalankan di Android/iOS.');
       return;
@@ -127,15 +112,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // FUNGSI 3: Reverse Geocoding – Ubah koordinat menjadi alamat lengkap
-  // ─────────────────────────────────────────────────────────────────────────
   Future<void> _reverseGeocode() async {
     print('─────────────────────────────────────');
     print('[3] REVERSE GEOCODING - KOORDINAT KE ALAMAT');
     print('─────────────────────────────────────');
 
-    // Package geocoding tidak support platform Web
     if (kIsWeb) {
       print('[SKIP] Reverse Geocoding tidak didukung di platform Web. Jalankan di Android/iOS.');
       print('─────────────────────────────────────');
@@ -144,7 +125,7 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
-    const double latitude  = 52.2165157;
+    const double latitude = 52.2165157;
     const double longitude = 6.9437819;
 
     print('[INFO] Latitude  : $latitude');
@@ -171,9 +152,6 @@ class _HomePageState extends State<HomePage> {
     print('─────────────────────────────────────');
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // UI sederhana – output utama ada di Debug Console
-  // ─────────────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
